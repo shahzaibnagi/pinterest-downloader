@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinterest Downloader | Pink Theme</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #ffd6ec, #ffb8e6);
+        text-align: center;
+        color: #444;
+    }
+
+    .container {
+        max-width: 500px;
+        margin: 70px auto;
+        background: #fff;
+        padding: 35px;
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(255, 0, 128, 0.2);
+    }
+
+    h1 {
+        font-size: 28px;
+        color: #ff4da6;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin: 0 0 25px;
+        font-size: 15px;
+        color: #777;
+    }
+
+    input {
+        width: 90%;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid #ff99cc;
+        outline: none;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    button {
+        width: 95%;
+        padding: 15px;
+        background: #ff4da6;
+        border: none;
+        color: white;
+        border-radius: 12px;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(255, 0, 128, 0.3);
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #ff1a8c;
+        transform: translateY(-2px);
+    }
+
+    #result {
+        margin-top: 30px;
+    }
+
+    .download-box {
+        background: #ffe6f3;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .download-box a {
+        display: block;
+        margin-top: 10px;
+        padding: 12px;
+        background: #ff4da6;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .download-box a:hover {
+        background: #ff1a8c;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Pinterest Downloader</h1>
+    <p>Download Pinterest Images, Videos & Reels</p>
+
+    <input type="text" id="pinUrl" placeholder="Paste Pinterest URL here...">
+    <button onclick="downloadPin()">Download</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function downloadPin() {
+    const url = document.getElementById("pinUrl").value.trim();
+    const resultDiv = document.getElementById("result");
+
+    if (!url) {
+        resultDiv.innerHTML = "<p style='color:red;'>Please enter a Pinterest link</p>";
+        return;
+    }
+
+    resultDiv.innerHTML = "<p>Fetching download link...</p>";
+
+    // USE VERCEL PROXY API
+    const apiUrl = `/api/pin?url=${encodeURIComponent(url)}`;
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data && data.data && data.data.url) {
+            resultDiv.innerHTML = `
+                <div class="download-box">
+                    <h3>Download Ready!</h3>
+                    <a href="${data.data.url}" target="_blank">Click to Download</a>
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = "<p style='color:red;'>Invalid URL or API issue.</p>";
+        }
+
+    } catch (error) {
+        resultDiv.innerHTML = "<p style='color:red;'>Server error.</p>";
+        console.error(error);
+    }
+}
+</script>
+
+</body>
+</html>
